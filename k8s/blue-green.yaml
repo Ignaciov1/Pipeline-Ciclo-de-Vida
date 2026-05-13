@@ -1,0 +1,60 @@
+# Entorno BLUE (Estable - v1)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: duoc-app-blue
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: duoc-app
+      color: blue
+  template:
+    metadata:
+      labels:
+        app: duoc-app
+        color: blue
+    spec:
+      containers:
+        - name: app-container
+          image: 368336158612.dkr.ecr.us-east-1.amazonaws.com/duoc-lab:v1
+          ports:
+            - containerPort: 80
+---
+# Entorno GREEN (Nueva Versión - v2)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: duoc-app-green
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: duoc-app
+      color: green
+  template:
+    metadata:
+      labels:
+        app: duoc-app
+        color: green
+    spec:
+      containers:
+        - name: app-container
+          image: 368336158612.dkr.ecr.us-east-1.amazonaws.com/duoc-lab:v2
+          ports:
+            - containerPort: 80
+---
+# Service apuntando inicialmente a BLUE
+apiVersion: v1
+kind: Service
+metadata:
+  name: duoc-app-bg-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: duoc-app
+    color: blue
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80

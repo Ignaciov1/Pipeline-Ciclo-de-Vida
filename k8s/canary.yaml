@@ -1,0 +1,56 @@
+# Versión Estable (v1) - 90% del tráfico inicial
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: duoc-app-stable-v1
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: duoc-app-canary
+  template:
+    metadata:
+      labels:
+        app: duoc-app-canary
+        version: stable
+    spec:
+      containers:
+        - name: app-container
+          image: 368336158612.dkr.ecr.us-east-1.amazonaws.com/duoc-lab:v1
+          ports:
+            - containerPort: 80
+---
+# Versión Canary (v2) - 10% del tráfico inicial
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: duoc-app-canary-v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: duoc-app-canary
+  template:
+    metadata:
+      labels:
+        app: duoc-app-canary
+        version: canary
+    spec:
+      containers:
+        - name: app-container
+          image: 368336158612.dkr.ecr.us-east-1.amazonaws.com/duoc-lab:v2
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: duoc-app-canary-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: duoc-app-canary
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80

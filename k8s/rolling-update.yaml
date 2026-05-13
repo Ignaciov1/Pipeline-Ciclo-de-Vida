@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: duoc-app-deployment
+  labels:
+    app: duoc-app
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: duoc-app
+  template:
+    metadata:
+      labels:
+        app: duoc-app
+    spec:
+      containers:
+        - name: app-container
+          image: 368336158612.dkr.ecr.us-east-1.amazonaws.com/duoc-lab:v2
+          ports:
+            - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: duoc-app-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: duoc-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
